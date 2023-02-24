@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, Blueprint
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import openai
 import os
 
@@ -9,6 +10,7 @@ chatgpt_routes = Blueprint('chatgpt_routes', __name__)
 
 # Define API endpoint for ChatGPT integration
 @chatgpt_routes.route('/api/chat', methods=['POST'])
+@jwt_required()
 def chat():
     # Get user input from POST request
     user_input = request.json['message']

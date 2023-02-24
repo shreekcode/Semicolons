@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, Blueprint
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import openai
 import requests
 import os
@@ -10,6 +11,7 @@ openai.api_key = os.environ['OPENAI_KEY']
 
 # Define API endpoint for ChatGPT integration
 @dalle_routes.route('/api/dalle', methods=['POST'])
+@jwt_required()
 def chat():
     # Get user input from POST request
     user_input = request.json['description']
