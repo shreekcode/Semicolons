@@ -1,14 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 import openai
+import os
 
 # Set up OpenAI API key
-openai.api_key = "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"
+openai.api_key = os.environ['OPENAI_KEY']
 
-# Set up Flask app
-app = Flask(__name__)
+chatgpt_routes = Blueprint('chatgpt_routes', __name__)
 
 # Define API endpoint for ChatGPT integration
-@app.route('/api/chat', methods=['POST'])
+@chatgpt_routes.route('/api/chat', methods=['POST'])
 def chat():
     # Get user input from POST request
     user_input = request.json['message']
@@ -35,7 +35,3 @@ def chat():
 
     # Return the AI response to the user
     return jsonify({'ai_response': ai_response})
-
-# Start the Flask app
-if __name__ == '__main__':
-    app.run()

@@ -1,16 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 import openai
 import requests
+import os
 
+dalle_routes = Blueprint('dalle_routes', __name__)
 
 # Set up OpenAI API key
-openai.api_key = "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"
-
-# Set up Flask app
-app = Flask(__name__)
+openai.api_key = os.environ['OPENAI_KEY']
 
 # Define API endpoint for ChatGPT integration
-@app.route('/api/dalle', methods=['POST'])
+@dalle_routes.route('/api/dalle', methods=['POST'])
 def chat():
     # Get user input from POST request
     user_input = request.json['description']
@@ -34,8 +33,3 @@ def chat():
         fp.close()
 
     return jsonify({'image-url:': image_url})
-
-
-# Start the Flask app
-if __name__ == '__main__':
-    app.run()

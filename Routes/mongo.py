@@ -1,21 +1,17 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint
 from pymongo import MongoClient
 import bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from bson.json_util import dumps
 
-app = Flask(__name__)
+mongo_routes = Blueprint('mongo_routes', __name__)
 
 # MongoDB connection string and database name
 uri = 'localhost:27017'
 db_name = 'Semicolons'
 
-# Configure JWT settings
-app.config['JWT_SECRET_KEY'] = 'mysecretkey' # Replace with a secret key of your choice
-jwt = JWTManager(app)
-
 # Create a new user
-@app.route('/users', methods=['POST'])
+@mongo_routes.route('/users', methods=['POST'])
 def create_user():
     try:
         # Extract user data from request body
@@ -65,7 +61,7 @@ def create_user():
         # Close the MongoDB client
         client.close()
 
-@app.route('/user/<username>', methods=['GET'])
+@mongo_routes.route('/user/<username>', methods=['GET'])
 @jwt_required()
 def get_user(username):
     try:
@@ -93,7 +89,7 @@ def get_user(username):
         response.status_code = 500
         return response
 
-@app.route('/users', methods=['GET'])
+@mongo_routes.route('/users', methods=['GET'])
 @jwt_required()
 def get_users():
     try:
@@ -126,7 +122,7 @@ def get_users():
         client.close()
 
 # Delete user by username
-@app.route('/users/<username>', methods=['DELETE'])
+@mongo_routes.route('/users/<username>', methods=['DELETE'])
 @jwt_required()
 def delete_user(username):
     try:
@@ -157,7 +153,7 @@ def delete_user(username):
         client.close()
 
 # Authenticate a user
-@app.route('/login', methods=['POST'])
+@mongo_routes.route('/login', methods=['POST'])
 def login():
     try:
         # Extract user data from request body
@@ -192,7 +188,3 @@ def login():
     finally:
         # Close the MongoDB client
         client.close()
-
-# Start the server
-if __name__ == '__main__':
-    app.run(debug=True)
