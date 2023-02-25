@@ -124,7 +124,7 @@ def inprogress(user_input):
 #function for test_cases
 def test_cases(user_input):
     # Get user input from POST request
-    question = "what were the test cases,their status in pass or fail and assigned to which team member in the sprint?give the answer in key value pairs"
+    question = "name of test cases in the sprint,their status and assigned to which team member in the sprint ?"
     
     # Define the parameters for the GPT-3 API request
     prompt = f"{user_input + question}"
@@ -144,15 +144,23 @@ def test_cases(user_input):
     )
 
     # Extract the AI response from the API response
-    test_cases = response.choices[0].text.strip()
+    tc = response.choices[0].text.strip()
 
-    tasks_dict = {}
-    for task in re.findall(r'(\w+):\s*([\w\s,]+),\s*JIRA-ticket:(\d+),\s*Status:\s*(\w+),\s*Assigned to:\s*(\w+)', test_cases):
-        tasks_dict[task[0]] = {
-            'test_case_name': task[1],
-            'status': task[3],
-            'executed_by': task[4]
-        }
+    test_cases = {}
+
+    # Define the regular expression pattern to match the test case information
+    pattern = r"(\d+)\. (.+) - Assigned to (.+) \((.+)\)"
+
+    # Find all matches in the plain text
+    matches = re.findall(pattern, tc)
+
+    # For each match, extract the test case name, status, and assigned person
+    for match in matches:
+        name = match[1]
+        status = match[3]
+        assigned_to = match[2]
+        test_cases[name] = {"status": status, "assigned_to": assigned_to}
+
     return test_cases
 
 #function for sprints
